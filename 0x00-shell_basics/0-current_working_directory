@@ -1,2 +1,2 @@
 #!/bin/bash
-current_dir=$(cd -P -- "$(dirname -- "$0")"pwd -P)echo "$current_dir
+current_dir=$(dirname -- "$(readlink -f -- "$0")") current_dir=$(realpath "$current_dir") echo "$current_dir
