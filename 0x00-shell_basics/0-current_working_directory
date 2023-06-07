@@ -1,2 +1,2 @@
 #!/bin/bash
-current_dir=$(realpath .) echo "$current_dir"
+current_dir=$(cd -P -- "$(dirname -- "$0")" ; pwd -P)  echo "$current_dir
