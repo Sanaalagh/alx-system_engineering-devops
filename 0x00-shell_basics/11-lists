@@ -1,2 +1,2 @@
 #!/bin/bash
-ls -lA ls -lA .. ls -lA /boot
+ls -lA  | cat ls -la .. | cat ls -la /boot | cat
