@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+
+# Check if argument is provided
+if [ "$#" -ne 1 ]; then
+    echo "Usage: $0 {start|stop|restart}"
+    exit 1
+fi
+
+# Define the path to the manage_my_process script
+MANAGE_SCRIPT="./manage_my_process"
+
+# Function to check if the script exists
+check_script() {
+    if [ ! -e "$MANAGE_SCRIPT" ]; then
+        echo "$MANAGE_SCRIPT not found. Please make sure it exists."
+        exit 1
+    fi
+}
+
+# Case statement to handle arguments
+case "$1" in
+    start)
+        check_script
+        sudo "$MANAGE_SCRIPT" start
+        ;;
+    stop)
+        check_script
+        sudo "$MANAGE_SCRIPT" stop
+        ;;
+    restart)
+        check_script
+        sudo "$MANAGE_SCRIPT" restart
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart}"
+        exit 1
+        ;;
+esac
+
+exit 0
