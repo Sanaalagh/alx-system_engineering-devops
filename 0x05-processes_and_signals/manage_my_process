@@ -1,69 +1,12 @@
 #!/usr/bin/env bash
+# Indefinitely write text to tmp file (default '/tmp/my_process')
 
-# Function to write to the file and pause
-write_to_file() {
-    while true; do
-        echo "I am alive!" >> /tmp/my_process
-        sleep 2
-    done
-}
+sleep() {
+  ! read -rt "$1"
+} <> <(:)
 
-# Check if argument is provided
-if [ "$#" -ne 1 ]; then
-    echo "Usage: $0 {start|stop|restart}"
-    exit 1
-fi
-
-# Define the PID file path
-PID_FILE="/var/run/my_process.pid"
-
-# Function to start manage_my_process
-start() {
-    if [ -e "$PID_FILE" ]; then
-        echo "manage_my_process is already running"
-        exit 1
-    fi
-
-    write_to_file &
-    PID=$!
-    echo $PID > "$PID_FILE"
-    echo "manage_my_process started"
-}
-
-# Function to stop manage_my_process
-stop() {
-    if [ -e "$PID_FILE" ]; then
-        PID=$(cat "$PID_FILE")
-        kill "$PID"
-        rm "$PID_FILE"
-        echo "manage_my_process stopped"
-    else
-        echo "manage_my_process is not running"
-    fi
-}
-
-# Function to restart manage_my_process
-restart() {
-    stop
-    start
-    echo "manage_my_process restarted"
-}
-
-# Case statement to handle arguments
-case "$1" in
-    start)
-        start
-        ;;
-    stop)
-        stop
-        ;;
-    restart)
-        restart
-        ;;
-    *)
-        echo "Usage: $0 {start|stop|restart}"
-        exit 1
-        ;;
-esac
-
-exit 0
+while true
+do
+  echo 'I am alive!'
+  sleep 2
+done > "${TMPDIR:-/tmp}/my_process"
