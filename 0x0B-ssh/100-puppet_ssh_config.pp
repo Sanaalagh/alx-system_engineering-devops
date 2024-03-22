@@ -1,3 +1,6 @@
+# 100-puppet_ssh_config.pp
+include stdlib
+
 # Ensure the SSH config directory exists
 file { '/home/vagrant/.ssh':
   ensure => directory,
