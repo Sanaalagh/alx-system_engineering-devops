@@ -1,0 +1,5 @@
+Host 443520-web-01
+    IdentityFile ~/.ssh/school
+    PasswordAuthentication no
+    ChallengeResponseAuthentication no
+
