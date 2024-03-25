@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# Script to install and configure nginx on Ubuntu
+
+# Update and install nginx
+apt-get update
+apt-get install -y nginx
+
+# Overwrite default nginx configuration to return "Hello World" for every request
+echo "server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    root /var/www/html;
+    index index.html;
+    server_name _;
+    location / {
+        return 200 'Hello World!';
+    }
+}" > /etc/nginx/sites-available/default
+
+# Restart nginx to apply the changes (cannot use systemctl)
+service nginx restart
