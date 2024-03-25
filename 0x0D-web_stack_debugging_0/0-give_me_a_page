@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Fix my server to display "Hello Holberton" on the Apache root page
+
+# Update and install Apache
+apt-get update
+apt-get install -y apache2
+
+# Ensure Apache is running
+service apache2 start
+
+# Create a custom index.html file
+echo "<html><body>Hello Holberton</body></html>" > /var/www/html/index.html
