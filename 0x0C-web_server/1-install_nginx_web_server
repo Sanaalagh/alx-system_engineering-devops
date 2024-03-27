@@ -1,21 +1,18 @@
 #!/usr/bin/env bash
-# Script to install and configure nginx on Ubuntu
+# Bash script to install and configure Nginx on a new Ubuntu machine
 
-# Update and install nginx
-apt-get update
-apt-get install -y nginx
+# Update package lists and install Nginx
+sudo apt-get update
+sudo apt-get -y install nginx
 
-# Overwrite default nginx configuration to return "Hello World" for every request
-echo "server {
-    listen 80 default_server;
-    listen [::]:80 default_server;
-    root /var/www/html;
-    index index.html;
-    server_name _;
-    location / {
-        return 200 'Hello World!';
-    }
-}" > /etc/nginx/sites-available/default
+# Verify that Nginx is installed
+if [ ! -x /usr/sbin/nginx ]; then
+    echo "Error: Nginx installation failed"
+    exit 1
+fi
 
-# Restart nginx to apply the changes (cannot use systemctl)
-service nginx restart
+# Create a default HTML page with "Hello World!"
+echo "Hello World!" | sudo tee /var/www/html/index.html
+
+# Restart Nginx to apply changes
+sudo service nginx restart
