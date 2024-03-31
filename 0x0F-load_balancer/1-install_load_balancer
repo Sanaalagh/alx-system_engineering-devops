@@ -1,18 +1,35 @@
 #!/usr/bin/env bash
-# Installs and configures HAProxy to balance traffic between web-01 and web-02
-MyConfig="\
+# Installs and configures HAProxy to balance traffic between two web servers
+
+# Install HAProxy
+apt update
+apt install -y haproxy
+
+# Configure HAProxy
+echo "global
+    log /dev/log local0
+    log /dev/log local1 notice
+    daemon
+
+defaults
+    log     global
+    mode    http
+    option  httplog
+    option  dontlognull
+    timeout connect 5000ms
+    timeout client  50000ms
+    timeout server  50000ms
+
 frontend http_front
     bind *:80
     stats uri /haproxy?stats
-    default_backend web-servers
+    default_backend http_back
 
-backend web-servers
+backend http_back
     balance roundrobin
-    server 5292-web-01 18.208.126.41:80
-    server 5292-web-02 44.200.48.184:80
-"
-add-apt-repository ppa:vbernat/haproxy-2.0
-apt update
-apt install -y haproxy
-echo "$MyConfig" >> /etc/haproxy/haproxy.cfg
-service haproxy start
+    server web-01 52.91.151.245:80 check
+    server web-02 54.87.217.75:80 check
+" > /etc/haproxy/haproxy.cfg
+
+# Restart HAProxy to apply changes
+systemctl restart haproxy
