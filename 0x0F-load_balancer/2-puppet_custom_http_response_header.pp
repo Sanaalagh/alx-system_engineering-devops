@@ -1,27 +1,35 @@
-# Define class for Nginx installation and configuration
-class nginx_custom_header {
-    package { 'nginx':
-        ensure => 'installed',
-    }
-
-    file { '/etc/nginx/sites-available/default':
-        ensure  => file,
-        content => "server {
-            ...
-            add_header X-Served-By $hostname;
-            ...
-        }",
-        require => Package['nginx'],
-    }
-
-    service { 'nginx':
-        ensure => 'running',
-        enable => true,
-        require => File['/etc/nginx/sites-available/default'],
-    }
+# puppet manifest creating a custom HTTP header response
+exec { 'apt-get-update':
+  command => '/usr/bin/apt-get update',
 }
 
-# Apply the class to the servers
-node 'web-01', 'web-02' {
-    include nginx_custom_header
+package { 'nginx':
+  ensure  => installed,
+  require => Exec['apt-get-update'],
+}
+
+file_line { 'a':
+  ensure  => 'present',
+  path    => '/etc/nginx/sites-available/default',
+  after   => 'listen 80 default_server;',
+  line    => 'rewrite ^/redirect_me https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent;',
+  require => Package['nginx'],
+}
+
+file_line { 'b':
+  ensure  => 'present',
+  path    => '/etc/nginx/sites-available/default',
+  after   => 'listen 80 default_server;',
+  line    => 'add_header X-Served-By $hostname;',
+  require => Package['nginx'],
+}
+
+file { '/var/www/html/index.html':
+  content => 'Holberton School',
+  require => Package['nginx'],
+}
+
+service { 'nginx':
+  ensure  => running,
+  require => Package['nginx'],
 }
