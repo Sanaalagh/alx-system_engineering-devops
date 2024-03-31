@@ -1,11 +1,8 @@
 #!/usr/bin/env bash
 # Configures Nginx to respond with a custom header X-Served-By
-# shellcheck disable=SC2154
-sudo apt-get update
-sudo apt-get install -y nginx
-echo "server {
-  ...
-  add_header X-Served-By \$hostname;
-  ...
-}" | sudo tee /etc/nginx/sites-available/default
-sudo systemctl restart nginx
+apt-get -y update
+apt-get -y install nginx
+ufw allow 'Nginx HTTP'
+echo 'Hello World!' > /var/www/html/index.nginx-debian.html
+sed -i '/listen 80 default_server;/a add_header X-Served-By $hostname;' /etc/nginx/sites-available/default
+service nginx start
