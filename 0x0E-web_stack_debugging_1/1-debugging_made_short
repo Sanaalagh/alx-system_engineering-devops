@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Concise script to manage Nginx installation and service state
+
+# Update and install Nginx. The '&&' ensures the second command runs only if the first succeeds.
+sudo apt-get update && sudo apt-get install nginx -y
+
+# Start the Nginx service to ensure it's running.
+sudo service nginx start
+
+# Immediately stop the Nginx service. This is required to meet the project's specific condition.
+sudo service nginx stop
+
