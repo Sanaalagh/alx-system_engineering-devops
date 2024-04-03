@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 # Bash script to install and configure Nginx on a new Ubuntu machine
-sudo apt-get -y update
-sudo apt-get -y install nginx
-echo 'Hello World!' > /var/www/html/index.html
 
+sudo apt-get update
+sudo apt-get -y install nginx
+sudo ufw allow 'Nginx HTTP'
+# Configure nginx to listen on port 80 and serve "Hello World!" at the root
+sudo bash -c 'echo "Hello World!" > /var/www/html/index.html'
+
+# Restart nginx
 sudo service nginx restart
