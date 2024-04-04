@@ -1,35 +1,59 @@
 #!/usr/bin/env bash
-# Installs and configures HAProxy to balance traffic between two web servers
+# install load balancer
 
-# Install HAProxy
-apt update
-apt install -y haproxy
 
-# Configure HAProxy
-echo "global
-    log /dev/log local0
-    log /dev/log local1 notice
-    daemon
+echo -e "Updating and doing some minor checks...\n"
 
-defaults
-    log     global
-    mode    http
-    option  httplog
-    option  dontlognull
-    timeout connect 5000ms
-    timeout client  50000ms
-    timeout server  50000ms
+function install() {
+	        command -v "$1" &> /dev/null
 
-frontend http_front
-    bind *:80
-    stats uri /haproxy?stats
-    default_backend http_back
+		        #shellcheck disable=SC2181
+			        if [ $? -ne 0 ]; then
+					                echo -e "       Installing: $1\n"
+							                sudo apt-get update -y -qq && \
+										                        sudo apt-get install -y "$1" -qq
+									                echo -e "\n"
+											        else
+													                echo -e "       ${1} is already installed.\n"
+															        fi
+															}
 
-backend http_back
-    balance roundrobin
-    server web-01 52.91.151.245:80 check
-    server web-02 54.87.217.75:80 check
-" > /etc/haproxy/haproxy.cfg
+														install haproxy #install haproxy
 
-# Restart HAProxy to apply changes
-systemctl restart haproxy
+														echo -e "\nSetting up some minor stuff.\n"
+
+														# backup default server config file
+														sudo cp /etc/haproxy/haproxy.cfg haproxy_default.backup
+
+														server_config=\
+															"
+														defaults
+														  mode http
+														    timeout client 15s
+														      timeout connect 10s
+														        timeout server 15s
+															  timeout http-request 10s
+
+															  frontend beunique-tech-frontend
+															      bind *:80
+															          default_backend beunique-tech-backend
+
+																  backend beunique-tech-backend
+																      balance roundrobin
+																          server 443520-web-01 54.208.220.160:80 check
+																	      server 443520-web-02 18.204.10.166:80 check
+																	      "
+
+																	      # shellcheck disable=SC2154
+																	      echo "$server_config" | sudo dd status=none of=/etc/haproxy/haproxy.cfg
+
+																	      # enable haproxy to be started by init script
+																	      echo "ENABLED=1" | sudo dd status=none of=/etc/default/haproxy
+
+																	      echo "configured - Roundrobin On web-01 & web-02"
+
+																	      if [ "$(pgrep -c haproxy)" -le 0 ]; then
+																		              sudo service haproxy start
+																		      else
+																			              sudo service haproxy restart
+																	      fi
