@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
+# configures a server to listening on port 80 of all servers active IPv4 IPs
 
-# Insert 'autoindex on;' directive below 'listen 80 default_server' line
-sed -i '/listen 80 default_server/ a autoindex on;' /etc/nginx/sites-available/default
-
-# Restart Nginx service
-service nginx restart
+sudo ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
+sudo service nginx restart
