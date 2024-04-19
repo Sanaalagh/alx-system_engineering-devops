@@ -1,59 +1,12 @@
 #!/usr/bin/env bash
-# install load balancer
-
-
-echo -e "Updating and doing some minor checks...\n"
-
-function install() {
-	        command -v "$1" &> /dev/null
-
-		        #shellcheck disable=SC2181
-			        if [ $? -ne 0 ]; then
-					                echo -e "       Installing: $1\n"
-							                sudo apt-get update -y -qq && \
-										                        sudo apt-get install -y "$1" -qq
-									                echo -e "\n"
-											        else
-													                echo -e "       ${1} is already installed.\n"
-															        fi
-															}
-
-														install haproxy #install haproxy
-
-														echo -e "\nSetting up some minor stuff.\n"
-
-														# backup default server config file
-														sudo cp /etc/haproxy/haproxy.cfg haproxy_default.backup
-
-														server_config=\
-															"
-														defaults
-														  mode http
-														    timeout client 15s
-														      timeout connect 10s
-														        timeout server 15s
-															  timeout http-request 10s
-
-															  frontend beunique-tech-frontend
-															      bind *:80
-															          default_backend beunique-tech-backend
-
-																  backend beunique-tech-backend
-																      balance roundrobin
-																          server 443520-web-01 54.208.220.160:80 check
-																	      server 443520-web-02 18.204.10.166:80 check
-																	      "
-
-																	      # shellcheck disable=SC2154
-																	      echo "$server_config" | sudo dd status=none of=/etc/haproxy/haproxy.cfg
-
-																	      # enable haproxy to be started by init script
-																	      echo "ENABLED=1" | sudo dd status=none of=/etc/default/haproxy
-
-																	      echo "configured - Roundrobin On web-01 & web-02"
-
-																	      if [ "$(pgrep -c haproxy)" -le 0 ]; then
-																		              sudo service haproxy start
-																		      else
-																			              sudo service haproxy restart
-																	      fi
+# install load balancer with round robin
+apt-get update
+apt-get install -y software-properties-common
+yes enter | add-apt-repository ppa:vbernat/haproxy-1.8
+apt-get update && apt-get upgrade -y
+apt-get install -y haproxy=1.8.\*
+cp /etc/haproxy/haproxy.cfg /etc/haproxy/haproxy.cfg.copy
+echo -e "\nfrontend http_front\n\tbind *:80\n\tstats uri /haproxy?stats\n\tdefault_backend http_back" >> /etc/haproxy/haproxy.cfg
+echo -e "\nbackend http_back\n\tbalance roundrobin\n\tserver 404-web-01 34.73.47.85:80 check\n\tserver 404-web-02 34.73.31.23:80 check" >> /etc/haproxy/haproxy.cfg
+sudo service rsyslog restart
+service haproxy restart
