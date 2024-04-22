@@ -33,6 +33,9 @@ if __name__ == "__main__":
             print("Error: No data found for the provided employee ID")
             exit(1)
 
+        # Print API response for debugging
+        print("API Response:", data)
+
         # Count completed tasks
         completed_tasks = [task for task in data if task.get('completed')]
         total_tasks = len(data)
