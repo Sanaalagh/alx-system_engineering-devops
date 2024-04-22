@@ -27,7 +27,6 @@ if __name__ == "__main__":
 
     try:
         data = response.json()
-        
         # Check if data is empty
         if not data:
             print("Error: No data found for the provided employee ID")
