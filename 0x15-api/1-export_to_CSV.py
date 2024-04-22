@@ -3,32 +3,24 @@
 Exports data from a REST API to CSV for a given employee ID.
 """
 
-import csv
-import requests
-from sys import argv
-
 if __name__ == "__main__":
-    if len(argv) != 2:
-        print("Usage: {} <employee_id>".format(argv[0]))
-        exit(1)
 
-    employee_id = argv[1]
+    import csv
+    import requests
+    from sys import argv
 
-    # Endpoint URL for the API
-    url = "https://jsonplaceholder.typicode.com/users/{}/todos".format(
-            employee_id)
-
-    # Fetching data from the API
-    response = requests.get(url)
-    data = response.json()
-
-    # Writing data to CSV file
-    filename = "{}.csv".format(employee_id)
-    with open(filename, mode='w', newline='') as file:
-        writer = csv.writer(file)
-        writer.writerow(
-                ['USER_ID', 'USERNAME', 'TASK_COMPLETED_STATUS', 'TASK_TITLE'])
-        for task in data:
-            writer.writerow(
-                    [employee_id, task['username'], str(
-                        task['completed']), task['title']])
+    if len(argv) < 2:
+        exit()
+    todos = requests.get(
+        "https://jsonplaceholder.typicode.com/todos?userId={}"
+        .format(argv[1]))
+    name = requests.get(
+        "https://jsonplaceholder.typicode.com/users?id={}".format(argv[1]))
+    name = name.json()
+    name = name[0]["username"]
+    todos = todos.json()
+    file_name = "{}.csv".format(argv[1])
+    with open(file_name, 'w') as csv_file:
+        writer = csv.writer(csv_file, delimiter=',', quoting=csv.QUOTE_ALL)
+        for todo in todos:
+            writer.writerow([argv[1], name, todo['completed'], todo['title']])
