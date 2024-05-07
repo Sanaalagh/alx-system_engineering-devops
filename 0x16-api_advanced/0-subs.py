@@ -2,22 +2,26 @@
 """
 Module to fetch the number of subscribers for a given subreddit.
 """
-import json
 import requests
-import sys
 
 
 def number_of_subscribers(subreddit):
-    """Read reddit API and return number subscribers """
-    username = 'ledbag123'
-    password = 'Reddit72'
-    user_pass_dict = {'user': username, 'passwd': password, 'api_type': 'json'}
-    headers = {'user-agent': '/u/ledbag123 API Python for Holberton School'}
-    url = 'https://www.reddit.com/r/{}/about.json'.format(subreddit)
-    client = requests.session()
-    client.headers = headers
-    r = client.get(url, allow_redirects=False)
-    if r.status_code == 200:
-        return (r.json()["data"]["subscribers"])
+    """
+    Returns the number of subscribers for a given subreddit.
+    """
+    url = "https://www.reddit.com/r/{}/about.json".format(subreddit)
+    headers = {'User-Agent': 'Python:api_advanced:v1 (by /u/yourusername)'}
+    response = requests.get(url, headers=headers)
+
+    if response.status_code == 200:
+        return response.json().get('data', {}).get('subscribers', 0)
     else:
-        return(0)
+        return 0
+
+
+if __name__ == "__main__":
+    import sys
+    if len(sys.argv) < 2:
+        print("Please pass an argument for the subreddit to search.")
+    else:
+        print("{:d}".format(number_of_subscribers(sys.argv[1])))
