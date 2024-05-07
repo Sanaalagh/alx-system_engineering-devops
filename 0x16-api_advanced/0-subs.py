@@ -1,27 +1,33 @@
 #!/usr/bin/python3
 """
-Module to fetch the number of subscribers for a given subreddit.
+Module to interact with the Reddit API to get the number of subscribers.
 """
 import requests
 
 
+BASE_URL = 'https://www.reddit.com'
+'''Reddit's base API URL.
+'''
+
+
 def number_of_subscribers(subreddit):
-    """
-    Returns the number of subscribers for a given subreddit.
-    """
-    url = "https://www.reddit.com/r/{}/about.json".format(subreddit)
-    headers = {'User-Agent': 'Python:api_advanced:v1 (by /u/yourusername)'}
-    response = requests.get(url, headers=headers)
-
-    if response.status_code == 200:
-        return response.json().get('data', {}).get('subscribers', 0)
-    else:
-        return 0
-
-
-if __name__ == "__main__":
-    import sys
-    if len(sys.argv) < 2:
-        print("Please pass an argument for the subreddit to search.")
-    else:
-        print("{:d}".format(number_of_subscribers(sys.argv[1])))
+    '''Retrieves the number of subscribers in a given subreddit.
+    '''
+    api_headers = {
+        'Accept': 'application/json',
+        'User-Agent': ' '.join([
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+            'AppleWebKit/537.36 (KHTML, like Gecko)',
+            'Chrome/97.0.4692.71',
+            'Safari/537.36',
+            'Edg/97.0.1072.62'
+        ])
+    }
+    res = requests.get(
+        '{}/r/{}/about/.json'.format(BASE_URL, subreddit),
+        headers=api_headers,
+        allow_redirects=False
+    )
+    if res.status_code == 200:
+        return res.json()['data']['subscribers']
+    return 0
