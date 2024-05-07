@@ -4,6 +4,7 @@ Module to fetch the titles of the top ten hot posts for a given subreddit.
 """
 import requests
 
+
 def top_ten(subreddit):
     """
     Prints the titles of the top ten hot posts for a given subreddit.
@@ -18,6 +19,7 @@ def top_ten(subreddit):
             print(post['data']['title'])
     else:
         print(None)
+
 
 if __name__ == "__main__":
     import sys
