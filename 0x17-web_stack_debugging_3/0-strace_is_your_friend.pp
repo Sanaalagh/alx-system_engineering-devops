@@ -1,4 +1,4 @@
-# Fixes bad `phpp` extensions to `php` in the WordPress file `wp-settings.php`.
+# This Puppet manifest fixes missing configuration file issue for Apache on WordPress
 
 exec { 'fix-wordpress':
   command => 'sed -i s/phpp/php/g /var/www/html/wp-settings.php',
