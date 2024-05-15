@@ -1,4 +1,3 @@
-# 0-the_sky_is_the_limit_not.pp
 # This Puppet manifest optimizes Nginx to handle more concurrent connections
 
 exec { 'optimize-nginx-config':
