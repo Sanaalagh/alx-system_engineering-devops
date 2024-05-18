@@ -1,3 +1,22 @@
 #!/usr/bin/env bash
-# restart gracefully gunicorn
-ps aux | grep gunicorn | grep -v grep | awk '{ print $2 }' | xargs kill -HUP && echo "OK"
+# Restart Gunicorn gracefully without downtime
+
+# Find the Gunicorn master process ID
+gunicorn_pid=$(ps aux | grep '[g]unicorn' | awk '{print $2}')
+
+# Check if the PID was found
+if [ -z "$gunicorn_pid" ]; then
+  echo "No Gunicorn process found"
+  exit 1
+fi
+
+# Send the HUP signal to gracefully reload Gunicorn
+kill -HUP "$gunicorn_pid"
+
+# Verify the signal was sent successfully
+if [ $? -eq 0 ]; then
+  echo "OK"
+else
+  echo "Failed to restart Gunicorn"
+  exit 1
+fi
